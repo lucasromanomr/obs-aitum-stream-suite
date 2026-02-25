@@ -480,10 +480,10 @@ OBSBasicSettings::~OBSBasicSettings()
 {
 	if (extra_outputs)
 		obs_data_array_release(extra_outputs);
-	for (auto it = video_encoder_properties.begin(); it != video_encoder_properties.end(); it++)
-		obs_properties_destroy(it->second);
-	for (auto it = audio_encoder_properties.begin(); it != audio_encoder_properties.end(); it++)
-		obs_properties_destroy(it->second);
+	for (auto &[key, props] : video_encoder_properties)
+		obs_properties_destroy(props);
+	for (auto &[key, props] : audio_encoder_properties)
+		obs_properties_destroy(props);
 }
 
 QIcon OBSBasicSettings::GetGeneralIcon() const
@@ -1309,11 +1309,11 @@ void OBSBasicSettings::LoadOutputStats(std::vector<video_t *> *oldVideos)
 	if (proc_handler_call(ph, "aitum_vertical_get_video", &cd))
 		vertical_video = (video_t *)calldata_ptr(&cd, "video");
 	calldata_free(&cd);
-	for (auto it = refs.begin(); it != refs.end(); it++) {
+	for (const auto &ref : refs) {
 		video_t *video;
 		obs_encoder_t *encoder;
 		obs_output_t *output;
-		std::tie(video, encoder, output) = *it;
+		std::tie(video, encoder, output) = ref;
 
 		if (!video) {
 			stats += "No Canvas ";

@@ -3444,7 +3444,7 @@ void CanvasDock::LoadTransitions()
 			continue;
 		const char *name = obs_source_get_display_name(id);
 
-		OBSSourceAutoRelease tr = obs_source_create_private(id, name, NULL);
+		OBSSourceAutoRelease tr = obs_source_create_private(id, name, nullptr);
 		transitions.emplace_back(tr);
 
 		//signals "transition_stop" and "transition_video_stop"
@@ -3499,8 +3499,7 @@ void CanvasDock::UpdateLinkedScenes()
 				if (strcmp(obs_data_get_string(item, "name"), obs_canvas_get_name(canvas)) == 0) {
 					auto sn = QString::fromUtf8(obs_data_get_string(item, "scene"));
 					auto sil = sceneList->findItems(sn, Qt::MatchExactly);
-					foreach(auto si, sil)
-					{
+					for (auto si : sil) {
 						si->setIcon(QIcon(":/aitum/media/linked.svg"));
 					}
 				} else if (strcmp(obs_data_get_string(item, "name"), "") == 0 &&
@@ -3509,8 +3508,7 @@ void CanvasDock::UpdateLinkedScenes()
 					obs_data_set_string(item, "name", obs_canvas_get_name(canvas));
 					auto sn = QString::fromUtf8(obs_data_get_string(item, "scene"));
 					auto sil = sceneList->findItems(sn, Qt::MatchExactly);
-					foreach(auto si, sil)
-					{
+					for (auto si : sil) {
 						si->setIcon(QIcon(":/aitum/media/linked.svg"));
 					}
 				}

@@ -147,8 +147,7 @@ bool version_info_downloaded(void *param, struct file_download_data *file)
 				auto close = new QAction("x");
 				close->setToolTip(QString::fromUtf8(obs_module_text("ClosePartnerBlock")));
 				close->connect(close, &QAction::triggered, [] {
-					foreach(auto &a, partnerBlockActions)
-					{
+					for (auto &a : partnerBlockActions) {
 						toolbar->removeAction(a);
 					}
 					partnerBlockActions.clear();
@@ -305,8 +304,7 @@ void reset_live_dock_state()
 	QList<QDockWidget *> left_docks;
 	QList<int> left_dock_sizes;
 
-	foreach(auto &canvas_dock, canvas_docks)
-	{
+	for (auto &canvas_dock : canvas_docks) {
 		d = (QDockWidget *)canvas_dock->parentWidget();
 		d->setVisible(true);
 		d->setFloating(false);
@@ -320,8 +318,7 @@ void reset_live_dock_state()
 		canvas_dock->reset_live_state();
 	}
 
-	foreach(auto &canvas_clone_dock, canvas_clone_docks)
-	{
+	for (auto &canvas_clone_dock : canvas_clone_docks) {
 		d = (QDockWidget *)canvas_clone_dock->parentWidget();
 		d->setVisible(true);
 		d->setFloating(false);
@@ -450,8 +447,7 @@ void reset_build_dock_state()
 	QList<QDockWidget *> right_docks;
 	QList<int> right_dock_sizes;
 
-	foreach(auto &canvas_dock, canvas_docks)
-	{
+	for (auto &canvas_dock : canvas_docks) {
 		d = (QDockWidget *)canvas_dock->parentWidget();
 		d->setVisible(true);
 		d->setFloating(false);
@@ -465,8 +461,7 @@ void reset_build_dock_state()
 		canvas_dock->reset_build_state();
 	}
 
-	foreach(auto &canvas_clone_dock, canvas_clone_docks)
-	{
+	for (auto &canvas_clone_dock : canvas_clone_docks) {
 		d = (QDockWidget *)canvas_clone_dock->parentWidget();
 		d->setVisible(true);
 		d->setFloating(false);
@@ -559,11 +554,11 @@ void load_dock_state(QString mode)
 		state = obs_data_get_string(current_profile_config, setting_name.c_str());
 	}
 	if (state.empty()) {
-		for (auto it = fixed_tabs.begin(); it != fixed_tabs.end(); ++it) {
-			auto name = std::get<0>(*it);
+		for (const auto &tab : fixed_tabs) {
+			const auto &name = std::get<0>(tab);
 			auto translated = obs_module_text(name.c_str());
 			if ((translated && mode == translated) || mode == QString::fromStdString(name)) {
-				std::get<1> (*it)();
+				std::get<1>(tab)();
 				return;
 			}
 		}
@@ -1189,7 +1184,7 @@ static void frontend_event(enum obs_frontend_event event, void *private_data)
 			const auto main_window = static_cast<QMainWindow *>(obs_frontend_get_main_window());
 			QTimer::singleShot(2000, main_window, [main_window] {
 				auto dialogs = main_window->findChildren<QDialog *>();
-				for (auto dialog : dialogs) {
+				for (auto *dialog : dialogs) {
 					dialog->close();
 				}
 				QMetaObject::invokeMethod(main_window, "close", Qt::QueuedConnection);
@@ -1492,7 +1487,7 @@ bool obs_module_load(void)
 	//tb->setMovable(false);
 	//tb->setAllowedAreas(Qt::ToolBarArea::TopToolBarArea);
 
-	for (auto it : fixed_tabs) {
+	for (const auto &it : fixed_tabs) {
 		auto index = modesTabBar->addTab(QString::fromUtf8(obs_module_text(std::get<0>(it).c_str())));
 		modesTabBar->setTabData(index, QString::fromUtf8(std::get<0>(it).c_str()));
 		modesTabBar->setTabIcon(index, generateEmojiQIcon(std::get<2>(it), modesTabBar->palette().color(QPalette::Text)));
@@ -1557,7 +1552,7 @@ bool obs_module_load(void)
 			auto d = modesTabBar->tabData(index);
 			if (!d.isNull() && d.isValid() && !d.toString().isEmpty()) {
 				menu.addAction(QString::fromUtf8(obs_module_text("Reset")), [d] {
-					for (auto it : fixed_tabs) {
+					for (const auto &it : fixed_tabs) {
 						if (std::get<0>(it) == d.toString().toUtf8().constData()) {
 							std::get<1>(it)();
 							return;
@@ -1566,13 +1561,13 @@ bool obs_module_load(void)
 				});
 			} else {
 				bool found = false;
-				for (auto it : canvas_docks) {
+				for (const auto &it : canvas_docks) {
 					if (it->parentWidget()->objectName() == modesTabBar->tabText(index)) {
 						found = true;
 						break;
 					}
 				}
-				for (auto it : canvas_clone_docks) {
+				for (const auto &it : canvas_clone_docks) {
 					if (it->parentWidget()->objectName() == modesTabBar->tabText(index)) {
 						found = true;
 						break;
